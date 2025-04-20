@@ -95,7 +95,7 @@ This will install the library to `/usr/local/lib/` and the header file to `/usr/
 int main(void)
 {
     // Allocate an array of 10 integers
-    int *arr = ft_safe_allocate((size[2]){10, sizeof(int)}, ALLOCATE, NULL);
+    int *arr = ft_safe_allocate((size_t[2]){10, sizeof(int)}, ALLOCATE, NULL);
     
     // Initialize array
     int i = 0;
