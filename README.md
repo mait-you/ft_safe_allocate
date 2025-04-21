@@ -131,6 +131,6 @@ int main(void)
 - Tracks up to 1024 allocations (configurable via MAX_ALLOCATIONS or HASH_TABLE_SIZE)
 - Warns when nearing the allocation tracking limit (>90% full)
 
-## License
+## Acknowledgments
 
 This project is part of the 42 School curriculum and follows its licensing requirements.
