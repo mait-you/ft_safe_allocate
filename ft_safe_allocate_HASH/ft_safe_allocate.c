@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/20 17:47:56 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/24 09:22:19 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ size_t	hash_ptr(const void *ptr)
  *        - For FREE_ONE and FREE_ALL: always returns NULL.
  *        - If an error occurs (e.g., allocation failure), returns NULL.
  */
-void	*ft_safe_allocate(size_t size[2], t_action action, void *ptr)
+void	*ft_safe_allocate(size_t size[2], t_action action, void *ptr, void **double_ptr)
 {
 	static t_allocation		ptr_array[HASH_TABLE_SIZE];
 	static pthread_mutex_t	init_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -76,7 +76,7 @@ void	*ft_safe_allocate(size_t size[2], t_action action, void *ptr)
 	else if (action == FREE_ALL)
 		user_ptr = free_all(ptr_array);
 	else if (action == FREE_ONE)
-		user_ptr = free_specific(ptr_array, ptr);
+		user_ptr = free_specific(ptr_array, ptr, double_ptr);
 	else if (action == GET_USAGE)
 		user_ptr = (void *)(uintptr_t)get_allocation_count(ptr_array);
 	else if (action == REALLOC)

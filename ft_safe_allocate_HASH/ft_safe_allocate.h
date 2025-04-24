@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/20 18:08:06 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/24 10:55:26 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,11 @@ typedef enum e_action
 	REALLOC
 }	t_action;
 
-void	*allocate_ptr_memory_fencing(size_t size[2], \
+void	*allocate_ptr_memfen(size_t size[2], \
 	t_allocation *ptr_array);
-void	*free_all_memory_fencing(t_allocation *ptr_array);
-void	*free_specific_memory_fencing(t_allocation *ptr_array, \
-	const void *ptr);
+void	*free_all_memfen(t_allocation *ptr_array);
+void	*free_specific_memfen(t_allocation *ptr_array, \
+	const void *ptr, void **double_ptr);
 
 void	*ft_memset(void *b, int c, size_t len);
 void	*ft_calloc(size_t count, size_t size);
@@ -74,11 +74,13 @@ void	*realloc_ptr(size_t size[2], t_allocation *ptr_array, \
 	void *ptr);
 void	*allocate_ptr(size_t size[2], t_allocation *ptr_array);
 void	*free_all(t_allocation *ptr_array);
-void	*free_specific(t_allocation *ptr_array, const void *ptr);
+void	*free_specific(\
+	t_allocation *ptr_array, const void *ptr, void **double_ptr);
 int		get_allocation_count(t_allocation *ptr_array);
 
 size_t	hash_ptr(const void *ptr);
 
-void	*ft_safe_allocate(size_t size[2], t_action action, void *ptr);
+void	*ft_safe_allocate(\
+	size_t size[2], t_action action, void *ptr, void **double_ptr);
 
 #endif
