@@ -6,49 +6,11 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 16:25:38 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/20 17:50:06 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:44:13 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_safe_allocate.h"
-
-/**
- * @brief Adds a newly allocated pointer to the tracking array.
- * 
- * @param ptr_array The tracking array to store allocation info.
- * @param original_ptr The original pointer, if any (used for debugging or
- *        fencing).
- * @param user_ptr The actual user-accessible pointer to be tracked.
- * @param size An array of two size_t values: count and size of each element.
- * 
- * @return int SUCCESS if added, ERROR if the tracking array is full.
- */
-int	add_to_tracking(
-	t_allocation *ptr_array,
-	void *original_ptr,
-	void *user_ptr,
-	size_t size[2])
-{
-	size_t	hash;
-	int		i;
-
-	i = 0;
-	hash = hash_ptr(user_ptr);
-	while (i < HASH_TABLE_SIZE)
-	{
-		if (ptr_array[hash].user_ptr == NULL)
-		{
-			ptr_array[hash].original_ptr = original_ptr;
-			ptr_array[hash].user_ptr = user_ptr;
-			ptr_array[hash].size = size[0] * size[1];
-			return (SUCCESS);
-		}
-		hash = (hash + 1) % HASH_TABLE_SIZE;
-		i++;
-	}
-	ft_putendl_fd(ERR_ALLOC_TRACK_LIMIT, STDERR_FILENO);
-	return (ERROR);
-}
 
 /**
  * @brief Fills a block of memory with a specific byte value.
@@ -121,15 +83,31 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
  * @brief Writes a string followed by a newline to the given file descriptor.
  * 
  * @param s The string to write.
- * @param fd The file descriptor (e.g., 1 for stdout, 2 for stderr).
+ * @param fd The file descriptor.
  */
-void	ft_putendl_fd(char *s, int fd)
+void	ft_putstr_fd(char *s, int fd)
 {
-	if (!s)
-		return ;
-	if (fd == -1)
+	if (!s || fd == -1)
 		return ;
 	while (*s)
 		write(fd, s++, 1);
-	write(fd, "\n", 1);
+}
+
+/**
+ * @brief Writes an integer in lowercase hexadecimal to the given file
+ *        descriptor.
+ * 
+ * @param n The integer to write.
+ * @param fd The file descriptor.
+ */
+void	ft_puthex_fd(unsigned int n, int fd)
+{
+	char	*b;
+
+	b = "0123456789abcdef";
+	if (fd == -1)
+		return ;
+	if (n >= 16)
+		ft_puthex_fd(n / 16, fd);
+	write(fd, &b[n % 16], 1);
 }

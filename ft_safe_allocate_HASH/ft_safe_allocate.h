@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/24 10:55:26 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:51:15 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <stdbool.h>
+# include<libc.h>/////////////
 
 # ifndef MEMORY_FENCING
 #  define MEMORY_FENCING false
@@ -25,15 +26,15 @@
 # define SUCCESS 0
 # define ERROR 1
 
-# define WARN_NEAR_ALLOC_LIMIT "Warning: nearing allocation limit"
-# define WARN_FREE_NULL_PTR "Warning: attempt to free a NULL pointer"
+# define WARN_NEAR_ALLOC_LIMIT "Warning: nearing allocation limit\n"
+# define WARN_FREE_NULL_PTR "Warning: attempt to free a NULL pointer\n"
 # define WARN_PTR_NOT_ALLOCATED "Warning: pointer was not allocated by \
-ft_safe_allocate"
-# define ERR_ALLOC_TRACK_LIMIT "Error: allocation tracking limit reached"
+ft_safe_allocate so you can freed using ft_safe_allocate\n"
+# define ERR_ALLOC_TRACK_LIMIT "Error: allocation tracking limit reached\n"
 # define ERR_CORRUPTION_START "Error: memory corruption detected at START \
-guard byte"
+guard byte of: 0x"
 # define ERR_CORRUPTION_END "Error: memory corruption detected at END \
-guard byte"
+guard byte of: 0x"
 
 # define HASH_TABLE_SIZE 1024
 # define GUARD_SIZE 4
@@ -57,16 +58,17 @@ typedef enum e_action
 	REALLOC
 }	t_action;
 
-void	*allocate_ptr_memfen(size_t size[2], \
-	t_allocation *ptr_array);
-void	*free_all_memfen(t_allocation *ptr_array);
-void	*free_specific_memfen(t_allocation *ptr_array, \
-	const void *ptr, void **double_ptr);
+void	*free_list(t_allocation *ptr_array, void **double_ptr);
+void	*free_one(t_allocation *ptr_array, const void *ptr);
+void	*free_one_memfen(t_allocation *ptr_array, const void *ptr);
+void	*setup_memfen(void *ptr, size_t total_size);
+int		check_memfen(void *user_ptr, size_t total_size);
 
 void	*ft_memset(void *b, int c, size_t len);
 void	*ft_calloc(size_t count, size_t size);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
-void	ft_putendl_fd(char *s, int fd);
+void	ft_putstr_fd(char *s, int fd);
+void	ft_puthex_fd(unsigned int n, int fd);
 int		add_to_tracking(t_allocation *ptr_array, void *original_ptr, \
 	void *user_ptr, size_t size[2]);
 

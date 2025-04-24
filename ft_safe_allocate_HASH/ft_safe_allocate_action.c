@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/24 11:05:15 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:59:34 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,62 +60,8 @@ int	get_allocation_count(t_allocation *ptr_array)
 		i++;
 	}
 	if (count > HASH_TABLE_SIZE * 0.9)
-		ft_putendl_fd(WARN_NEAR_ALLOC_LIMIT, STDOUT_FILENO);
+		ft_putstr_fd(WARN_NEAR_ALLOC_LIMIT, STDOUT_FILENO);
 	return (count);
-}
-
-/**
- * @brief Frees a single memory allocation and updates the allocation table
- * 
- * @param ptr_array Array of allocation records
- * @param ptr Pointer to memory that needs to be freed
- * @return void* Always returns NULL
- */
-void *free_one(t_allocation *ptr_array, const void *ptr)
-{
-	int		i;
-	size_t	hash;
-
-	hash = hash_ptr(ptr);
-	i = 0;
-	while (i < HASH_TABLE_SIZE)
-	{
-		if (ptr_array[hash].user_ptr == ptr)
-		{
-			free(ptr_array[hash].user_ptr);
-			ft_memset(&ptr_array[hash], 0, sizeof(t_allocation));
-			return (NULL);
-		}
-		if (ptr_array[hash].user_ptr == NULL)
-			break;
-		hash = (hash + 1) % HASH_TABLE_SIZE;
-		i++;
-	}
-	free((void *)ptr);
-	ft_putendl_fd(WARN_PTR_NOT_ALLOCATED, STDERR_FILENO);
-	return (NULL);
-}
-
-/**
- * @brief Frees a list of memory allocations and the list pointer itself
- * 
- * @param ptr_array Array of allocation records
- * @param double_ptr Array of pointers to memory that needs to be freed
- * @return void* Always returns NULL
- */
-void *free_list(t_allocation *ptr_array, void **double_ptr)
-{
-	int	i;
-
-	i = 0;
-	while (double_ptr[i])
-	{
-		free_one(ptr_array, double_ptr[i]);
-		double_ptr[i] = NULL;
-		i++;
-	}
-	free_one(ptr_array, double_ptr);
-	return (NULL);
 }
 
 /**
@@ -130,14 +76,14 @@ void *free_specific(t_allocation *ptr_array, const void *ptr, void **double_ptr)
 {
 	if (!ptr && !double_ptr)
 	{
-		ft_putendl_fd(WARN_FREE_NULL_PTR, STDERR_FILENO);
+		ft_putstr_fd(WARN_FREE_NULL_PTR, STDERR_FILENO);
 		return (NULL);
 	}
 	if (ptr && double_ptr)
 		return (NULL);
-	if (MEMORY_FENCING)
-		return (free_specific_memfen(ptr_array, ptr, double_ptr));
-	if (ptr)
+	if (ptr && MEMORY_FENCING)
+		return (free_one_memfen(ptr_array, ptr));
+	if (ptr && !MEMORY_FENCING)
 		return (free_one(ptr_array, ptr));
 	if (double_ptr)
 		return (free_list(ptr_array, double_ptr));
@@ -156,14 +102,18 @@ void	*free_all(t_allocation *ptr_array)
 {
 	int	i;
 
-	if (MEMORY_FENCING)
-		return (free_all_memfen(ptr_array));
 	i = 0;
 	while (i < HASH_TABLE_SIZE)
 	{
 		if (ptr_array[i].user_ptr)
 		{
-			free(ptr_array[i].user_ptr);
+			if (MEMORY_FENCING)
+			{
+				check_memfen(ptr_array[i].user_ptr, ptr_array[i].size);
+				free(ptr_array[i].original_ptr);
+			}
+			else
+				free(ptr_array[i].user_ptr);
 			ft_memset(&ptr_array[i], 0, sizeof(t_allocation));
 		}
 		i++;
@@ -184,20 +134,24 @@ void	*free_all(t_allocation *ptr_array)
 void	*allocate_ptr(size_t size[2], t_allocation *ptr_array)
 {
 	void	*user_ptr;
+	void	*original_ptr;
 
 	if (MEMORY_FENCING)
-		return (allocate_ptr_memfen(size, ptr_array));
-	user_ptr = ft_calloc(size[0], size[1]);
-	if (!user_ptr)
 	{
-		free_all(ptr_array);
-		return (NULL);
+		original_ptr = ft_calloc(1, (size[0] * size[1]) + (GUARD_SIZE * 2));
+		if (!original_ptr)
+			return (free_all(ptr_array));
+		user_ptr = setup_memfen(original_ptr, size[0] * size[1]);
+		if (add_to_tracking(ptr_array, original_ptr, user_ptr, size) == ERROR)
+			return (free(original_ptr), free_all(ptr_array));
 	}
-	if (add_to_tracking(ptr_array, NULL, user_ptr, size) == ERROR)
+	else if (!MEMORY_FENCING)
 	{
-		free(user_ptr);
-		free_all(ptr_array);
-		return (NULL);
+		user_ptr = ft_calloc(size[0], size[1]);
+		if (!user_ptr)
+			return (free_all(ptr_array));
+		if (add_to_tracking(ptr_array, NULL, user_ptr, size) == ERROR)
+			return (free(user_ptr), free_all(ptr_array));
 	}
 	return (user_ptr);
 }

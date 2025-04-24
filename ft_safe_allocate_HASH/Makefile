@@ -6,7 +6,7 @@
 #    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/04/20 10:30:02 by mait-you         ###   ########.fr        #
+#    Updated: 2025/04/24 15:01:37 by mait-you         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,11 +15,11 @@ NAME        := ft_safe_allocate.a
 
 # Compiler and flags
 CC          := cc
-CFLAGS      := -Wall -Wextra -Werror
+CFLAGS      := -Wall -Wextra -Werror #-fsanitize=address -g
 
 # Source files
 SRCS        := ft_safe_allocate.c ft_safe_allocate_action.c \
-            ft_safe_allocate_utils.c memory_fencing.c
+            ft_safe_allocate_utils.c ft_safe_allocate_cleanup.c memory_fencing.c
 
 # Object files
 OBJS_DIR    := obj
@@ -52,7 +52,7 @@ $(OBJS_DIR) $(DEBUG_DIR) $(TEST_DIR):
 
 # Memory fencing build
 fencing: CFLAGS += -DMEMORY_FENCING=true
-fencing: clean $(OBJS)
+fencing: fclean $(OBJS)
 	@echo "$(GREEN)Creating memory-fenced library archive...$(RESET)"
 	@ar rcs $(NAME) $(OBJS)
 	@echo "$(GREEN)Memory-fenced library $(NAME) compiled successfully$(RESET)"
