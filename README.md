@@ -38,6 +38,15 @@ make fencing
 # Install to system
 make install
 
+# Uninstall the library from system
+make uninstall
+
+# Install the fenced library to system
+make install_fenced
+
+# Uninstall the fenced library from system
+make uninstall_fenced
+
 # Clean up object files
 make clean
 
@@ -113,6 +122,7 @@ size_t size[2] = {10, sizeof(char *)};
 char **strings = ft_safe_allocate(size, ALLOCATE, NULL, NULL);
 
 // Allocate individual strings
+int i = 0;
 while (i < size[0])
 {
     strings[i] = ft_safe_allocate((size_t[2]){5, sizeof(char)}, ALLOCATE, NULL, NULL);
@@ -152,7 +162,7 @@ ft_safe_allocate(NULL, FREE_ALL, NULL, NULL);
 ### Memory Usage Statistics
 
 ```c
-unsigned int count = (unsigned int)(uintptr_t)ft_safe_allocate(NULL, GET_USAGE, NULL, NULL);
+int count = (int)(uintptr_t)ft_safe_allocate(NULL, GET_USAGE, NULL, NULL);
 printf("Current allocations: %u\n", count);
 ```
 
@@ -163,11 +173,8 @@ Always check return values to handle allocation failures:
 ```c
 size_t size[2] = {10, sizeof(int)};
 int *array = ft_safe_allocate(size, ALLOCATE, NULL, NULL);
-if (!array) {
-    // Clean up and exit
-    ft_safe_allocate(NULL, FREE_ALL, NULL, NULL);
-    return 1;
-}
+if (!array)
+    return (ft_safe_allocate(NULL, FREE_ALL, NULL, NULL), -1);
 ```
 
 ## 🛡️ Memory Fencing
@@ -215,4 +222,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📜 License
 
-This project is part of the 42 School curriculum and follows its licensing requirements.
+This project is follow the requirements of 42 School (norminette ...).
