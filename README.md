@@ -170,7 +170,7 @@ With fencing enabled, the library will automatically check for memory corruption
 Key configuration parameters can be found in `ft_safe_allocate.h`:
 
 - `MEMORY_FENCING`: Enable/disable guard bytes (default: false)
-- `HASH_TABLE_SIZE`: Size of the allocation tracking table (default: 100)
+- `HASH_TABLE_SIZE`: Size of the allocation tracking table (default: 2048 = 2.048 kB)
 - `GUARD_SIZE`: Size of guard regions in bytes (default: 8)
 - `GUARD_PATTERN`: Pattern used for guard bytes (default: 0xAB)
 
