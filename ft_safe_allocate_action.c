@@ -6,24 +6,14 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/24 14:59:34 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:07:49 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_safe_allocate.h"
 
-/**
- * @brief Reallocates memory for a given pointer by allocating new memory,
- *        copying the old data, and freeing the old pointer.
- * 
- * @param size An array of two size_t values representing the number of elements
- *             and size of each element.
- * @param ptr_array The tracking array holding allocated memory blocks.
- * @param ptr The pointer to be reallocated.
- * 
- * @return void* A new memory pointer on success, NULL on failure.
- */
-void	*realloc_ptr(size_t size[2], t_allocation *ptr_array, void *ptr)
+void	*realloc_ptr(
+	size_t *size, t_allocation *ptr_array, void *ptr, t_action action)
 {
 	void	*new_ptr;
 
@@ -33,19 +23,14 @@ void	*realloc_ptr(size_t size[2], t_allocation *ptr_array, void *ptr)
 	if (ptr)
 	{
 		ft_memcpy(new_ptr, ptr, size[0] * size[1]);
-		free_specific(ptr_array, ptr, NULL);
+		if (action == REALLOC)
+			free_specific(ptr_array, ptr, NULL, 0);
+		else if (action == ADD_TO_TRACK)
+			free(ptr);
 	}
 	return (new_ptr);
 }
 
-/**
- * @brief Returns the number of active (non-NULL) allocations in the tracking
- *        array.
- * 
- * @param ptr_array The tracking array holding allocated memory blocks.
- * 
- * @return int The number of active allocations.
- */
 int	get_allocation_count(t_allocation *ptr_array)
 {
 	int	count;
@@ -53,8 +38,10 @@ int	get_allocation_count(t_allocation *ptr_array)
 
 	count = 0;
 	i = 0;
+	
 	while (i < HASH_TABLE_SIZE)
 	{
+		// printf("==%p==\n", ptr_array[i].user_ptr);
 		if (ptr_array[i].user_ptr != NULL)
 			count++;
 		i++;
@@ -64,40 +51,30 @@ int	get_allocation_count(t_allocation *ptr_array)
 	return (count);
 }
 
-/**
- * @brief Handles different memory freeing scenarios based on input parameters
- * 
- * @param ptr_array Array of allocation records
- * @param ptr Single pointer to be freed (optional)
- * @param double_ptr Array of pointers to be freed (optional)
- * @return void* Always returns NULL
- */
-void *free_specific(t_allocation *ptr_array, const void *ptr, void **double_ptr)
+void	*free_specific(
+	t_allocation *ptr_array, const void *ptr, void **double_ptr, size_t *size)
 {
+	int	count;
+
+	count = 0;
 	if (!ptr && !double_ptr)
-	{
-		ft_putstr_fd(WARN_FREE_NULL_PTR, STDERR_FILENO);
-		return (NULL);
-	}
+		return (ft_putstr_fd(WARN_FREE_NULL_PTR, STDERR_FILENO), NULL);
 	if (ptr && double_ptr)
-		return (NULL);
-	if (ptr && MEMORY_FENCING)
-		return (free_one_memfen(ptr_array, ptr));
-	if (ptr && !MEMORY_FENCING)
-		return (free_one(ptr_array, ptr));
+		return (ft_putstr_fd(WARN_BOTH_PTR, STDERR_FILENO), NULL);
+	if (ptr)
+	{
+		if (MEMORY_FENCING)
+			return (free_one_memfen(ptr_array, ptr));
+		else if (!MEMORY_FENCING)
+			return (free_one(ptr_array, ptr));
+	}
+	if (size)
+		count = *size;
 	if (double_ptr)
-		return (free_list(ptr_array, double_ptr));
+		return (free_list(ptr_array, double_ptr, count));
 	return (NULL);
 }
 
-/**
- * @brief Frees all memory blocks stored in the tracking array and resets each
- *        slot.
- * 
- * @param ptr_array The tracking array holding allocated memory blocks.
- * 
- * @return void* Always returns NULL.
- */
 void	*free_all(t_allocation *ptr_array)
 {
 	int	i;
@@ -121,17 +98,7 @@ void	*free_all(t_allocation *ptr_array)
 	return (NULL);
 }
 
-/**
- * @brief Allocates memory using ft_calloc and adds it to the tracking array.
- *        If allocation fails or tracking fails, all memory is freed.
- * 
- * @param size An array of two size_t values representing the number of elements
- *             and size of each element.
- * @param ptr_array The tracking array to store the allocation information.
- * 
- * @return void* The allocated memory pointer on success, NULL on failure.
- */
-void	*allocate_ptr(size_t size[2], t_allocation *ptr_array)
+void	*allocate_ptr(size_t *size, t_allocation *ptr_array)
 {
 	void	*user_ptr;
 	void	*original_ptr;

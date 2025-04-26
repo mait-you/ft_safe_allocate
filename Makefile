@@ -6,7 +6,7 @@
 #    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/04/24 15:01:37 by mait-you         ###   ########.fr        #
+#    Updated: 2025/04/26 09:36:51 by mait-you         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME        := ft_safe_allocate.a
 
 # Compiler and flags
 CC          := cc
-CFLAGS      := -Wall -Wextra -Werror #-fsanitize=address -g
+CFLAGS      := -Wall -Wextra -Werror -fsanitize=address -g
 
 # Source files
 SRCS        := ft_safe_allocate.c ft_safe_allocate_action.c \
