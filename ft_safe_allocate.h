@@ -40,7 +40,7 @@
  * @brief Size of the hash table for tracking allocations
  * Larger values reduce collision probability but increase memory usage
  */
-# define HASH_TABLE_SIZE 100
+# define HASH_TABLE_SIZE 2048
 
 /**
  * @brief Size of guard regions in bytes
