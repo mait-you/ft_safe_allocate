@@ -6,7 +6,7 @@
 #    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/04/26 15:42:14 by mait-you         ###   ########.fr        #
+#    Updated: 2025/04/26 15:54:58 by mait-you         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,35 +36,34 @@ FENCING_OBJS		:= $(SRCS:%.c=$(FENCING_DIR)/%.o)
 
 # Colors for terminal output
 RESET				:= \033[0m
-GREEN				:= \033[32m
-YELLOW				:= \033[33m
-BLUE				:= \033[34m
-RED					:= \033[31m
+GREEN				:= \033[1;32m
+YELLOW				:= \033[4;33m
+BLUE				:= \033[1;34m
+RED					:= \033[1;31m
+GRAYL				:= \033[3;90m
 
 # Default target
 all: $(NAME)
 
 # Create library archive
 $(NAME): $(OBJS)
-	@echo "$(GREEN)Creating library archive...$(RESET)"
 	@ar rcs $(NAME) $(OBJS)
-	@echo "$(GREEN)Library $(NAME) compiled successfully$(RESET)"
+	@echo "$(GREEN)Library $(YELLOW)$(NAME)$(RESET) $(GREEN)created successfully!$(RESET)"
 
 # Compile source files to object files
 $(OBJS_DIR)/%.o: %.c $(HEADERS) | $(OBJS_DIR)
-	@echo "$(BLUE)Compiling $<...$(RESET)"
+	@echo "$(BLUE)Compiling: $(RESET)$(GRAYL)$<$(RESET)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Memory fencing variant
 fencing: $(FENCING_LIB)
 
 $(FENCING_LIB): $(FENCING_OBJS)
-	@echo "$(GREEN)Creating memory-fenced library archive...$(RESET)"
 	@ar rcs $(FENCING_LIB) $(FENCING_OBJS)
-	@echo "$(GREEN)Memory-fenced library $(FENCING_LIB) compiled successfully$(RESET)"
+	@echo "$(GREEN)Library $(YELLOW)$(FENCING_LIB)$(RESET) $(GREEN)created successfully!$(RESET)"
 
 $(FENCING_DIR)/%.o: %.c $(HEADERS) | $(FENCING_DIR)
-	@echo "$(BLUE)Compiling fenced $<...$(RESET)"
+	@echo "$(BLUE)Compiling: $(RESET)$(GRAYL)$<$(RESET)"
 	@$(CC) $(CFLAGS) $(FENCING_FLAGS) -c $< -o $@
 
 # Create directories
@@ -76,46 +75,45 @@ $(FENCING_DIR):
 
 # Clean object files
 clean:
-	@echo "$(RED)Cleaning object files...$(RESET)"
 	@rm -rf $(OBJS_DIR)
-	@echo "$(GREEN)Object files cleaned$(RESET)"
+	@echo "$(RED)>> Object files cleaned$(RESET)"
 
 # Clean object files and library
-fclean: clean
-	@echo "$(RED)Removing libraries...$(RESET)"
+fclean:
+	@rm -rf $(OBJS_DIR)
 	@rm -f $(NAME) $(FENCING_LIB)
-	@echo "$(GREEN)Libraries cleaned$(RESET)"
+	@echo "$(RED)>> Libraries cleaned$(RESET)"
 
 # Rebuild everything
 re: fclean all
 
 # Install the library to the system
 install: $(NAME)
-	@echo "$(YELLOW)Installing $(NAME) to /usr/local/lib...$(RESET)"
+	@echo "$(YELLOW)>> Installing $(NAME) to /usr/local/lib...$(RESET)"
 	@sudo cp $(NAME) /usr/local/lib/
 	@sudo cp $(HEADERS) /usr/local/include/
-	@echo "$(GREEN)Installation complete$(RESET)"
+	@echo "$(GREEN)>> Installation complete$(RESET)"
 
 # Uninstall the library from the system
 uninstall:
-	@echo "$(YELLOW)Uninstalling $(NAME) from /usr/local/lib...$(RESET)"
+	@echo "$(YELLOW)>> Uninstalling $(NAME) from /usr/local/lib...$(RESET)"
 	@sudo rm -f /usr/local/lib/$(NAME)
 	@sudo rm -f /usr/local/include/$(HEADERS)
-	@echo "$(GREEN)Uninstallation complete$(RESET)"
+	@echo "$(GREEN)>> Uninstallation complete$(RESET)"
 
 # Install the library to the system
 install_fenced: $(FENCING_LIB)
-	@echo "$(YELLOW)Installing $(FENCING_LIB) to /usr/local/lib...$(RESET)"
+	@echo "$(YELLOW)>> Installing $(FENCING_LIB) to /usr/local/lib...$(RESET)"
 	@sudo cp $(FENCING_LIB) /usr/local/lib/
 	@sudo cp $(HEADERS) /usr/local/include/
-	@echo "$(GREEN)Installation complete$(RESET)"
+	@echo "$(GREEN)>> Installation complete$(RESET)"
 
 # Uninstall the library from the system
 uninstall_fenced:
-	@echo "$(YELLOW)Uninstalling $(FENCING_LIB) from /usr/local/lib...$(RESET)"
+	@echo "$(YELLOW)>> Uninstalling $(FENCING_LIB) from /usr/local/lib...$(RESET)"
 	@sudo rm -f /usr/local/lib/$(FENCING_LIB)
 	@sudo rm -f /usr/local/include/$(HEADERS)
-	@echo "$(GREEN)Uninstallation complete$(RESET)"
+	@echo "$(GREEN)>> Uninstallation complete$(RESET)"
 
 # Phony targets
-.PHONY: clean install uninstall
+.PHONY: all clean fclean re fencing install uninstall install_fenced uninstall_fenced
