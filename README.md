@@ -187,10 +187,6 @@ The library provides detailed warning and error messages when issues are detecte
 - Attempts to free untracked pointers
 - Approaching allocation tracking limits
 
-## License
+## Acknowledgments
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Author
-
-Developed by mait-you ([mait-you@student.42.fr](mailto:mait-you@student.42.fr))
+This project is part of the 42 School curriculum and follows its licensing requirements.
