@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:20:35 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:18:06 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 	return (NULL);
 }
 
-void	*free_one_con(t_allocation *ptr_array, void **double_ptr)
+static void	*free_one_con(t_allocation *ptr_array, void **double_ptr)
 {
 	if (MEMORY_FENCING)
 		free_one_memfen(ptr_array, double_ptr);

@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:16:13 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:23:17 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,6 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <stdbool.h>
-# include <stdint.h>
-
-/* System-specific includes */
-// # ifdef __APPLE__ 
-// # endif
 
 /* ************************************************************************** */
 /* 							Configuration Parameters                          */
@@ -153,7 +148,107 @@ void	*ft_safe_allocate(\
 	size_t *size, t_action action, void *ptr, void **double_ptr);
 
 /**
- * @brief Memory cleanup functions
+ * @brief Computes a hash value for a pointer
+ *
+ * This function generates a hash value for a pointer to be used as an index
+ * in the allocation tracking hash table.
+ *
+ * @param ptr Pointer to hash
+ *
+ * @return Hash value modulo HASH_TABLE_SIZE as an index into the tracking array
+ */
+size_t	hash_ptr(const void *ptr);
+
+/**
+ *  Action functions
+ */
+
+/**
+ * @brief Allocates memory and adds it to the tracking system
+ *
+ * This function allocates memory of the specified size and adds it to
+ * the allocation tracking array. It handles memory fencing if enabled.
+ *
+ * @param size Pointer to size array: size[0]=count, size[1]=element size
+ * @param ptr_array The allocation tracking array
+ *
+ * @return Pointer to the allocated memory, or NULL on failure
+ */
+void	*allocate_ptr(size_t *size, t_allocation *ptr_array);
+
+/**
+ * @brief Frees all tracked allocations
+ *
+ * This function iterates through the tracking array and frees all
+ * non-NULL pointers that have been allocated by the system.
+ *
+ * @param ptr_array The allocation tracking array
+ *
+ * @return Always returns NULL to indicate all memory has been freed
+ */
+void	*free_all(t_allocation *ptr_array);
+
+/**
+ * @brief Handles specific free operations based on provided parameters
+ *
+ * This function serves as a router for different types of free operations
+ * based on the parameters provided. It can free a single pointer or an array.
+ *
+ * @param ptr_array The allocation tracking array
+ * @param ptr The pointer to free
+ * @param double_ptr Optional array of pointers to free
+ * @param size Optional size information
+ *
+ * @return Always returns NULL to indicate the memory has been freed
+ */
+void	*free_specific(\
+	t_allocation *ptr_array, const void *ptr, void **double_ptr, size_t *size);
+
+/**
+ * @brief Gets the number of active allocations in the tracking system
+ *
+ * This function counts the number of non-NULL pointers in the tracking array
+ * to determine how many active allocations are being tracked.
+ *
+ * @param ptr_array The allocation tracking array
+ *
+ * @return Number of active allocations
+ */
+int		get_allocation_count(t_allocation *ptr_array);
+
+/**
+ * @brief Reallocates memory while maintaining tracking information
+ *
+ * This function changes the size of a previously allocated memory block
+ * while preserving its contents and updating the tracking information.
+ *
+ * @param size Pointer to size array: size[0]=count, size[1]=element size
+ * @param ptr_array The allocation tracking array
+ * @param ptr The pointer to reallocate
+ *
+ * @return Pointer to the reallocated memory, or NULL on failure
+ */
+void	*realloc_ptr(\
+	size_t *size, t_allocation *ptr_array, void *ptr, t_action action);
+
+/**
+ * @brief Adds externally allocated memory to the tracking system
+ *
+ * This function allows adding memory that was allocated outside the
+ * ft_safe_allocate system to be tracked and safely freed later.
+ *
+ * @param ptr_array The allocation tracking array
+ * @param original_ptr The original pointer from malloc/calloc
+ * @param user_ptr The user-facing pointer (same as original_ptr if no fencing)
+ * @param size Pointer to the size of the allocated memory
+ *
+ * @return SUCCESS if successfully added, ERROR otherwise
+ */
+int		add_to_tracking(\
+	t_allocation *ptr_array, void *original_ptr, void *user_ptr, size_t *size);
+
+/**
+ *  	cleanup functions
  */
 
 /**
@@ -197,35 +292,7 @@ void	*free_one(t_allocation *ptr_array, const void *ptr);
 void	*free_one_memfen(t_allocation *ptr_array, const void *ptr);
 
 /**
- * @brief Handles specific free operations based on provided parameters
- *
- * This function serves as a router for different types of free operations
- * based on the parameters provided. It can free a single pointer or an array.
- *
- * @param ptr_array The allocation tracking array
- * @param ptr The pointer to free
- * @param double_ptr Optional array of pointers to free
- * @param size Optional size information
- *
- * @return Always returns NULL to indicate the memory has been freed
- */
-void	*free_specific(\
-	t_allocation *ptr_array, const void *ptr, void **double_ptr, size_t *size);
-
-/**
- * @brief Frees all tracked allocations
- *
- * This function iterates through the tracking array and frees all
- * non-NULL pointers that have been allocated by the system.
- *
- * @param ptr_array The allocation tracking array
- *
- * @return Always returns NULL to indicate all memory has been freed
- */
-void	*free_all(t_allocation *ptr_array);
-
-/**
- * @brief Memory fencing functions
+ * 		Memory fencing functions
  */
 
 /**
@@ -255,66 +322,6 @@ void	*setup_memfen(void *ptr, size_t total_size);
 int		check_memfen(void *user_ptr, size_t user_size);
 
 /**
- * @brief Memory allocation functions
- */
-
-/**
- * @brief Allocates memory and adds it to the tracking system
- *
- * This function allocates memory of the specified size and adds it to
- * the allocation tracking array. It handles memory fencing if enabled.
- *
- * @param size Pointer to size array: size[0]=count, size[1]=element size
- * @param ptr_array The allocation tracking array
- *
- * @return Pointer to the allocated memory, or NULL on failure
- */
-void	*allocate_ptr(size_t *size, t_allocation *ptr_array);
-
-/**
- * @brief Reallocates memory while maintaining tracking information
- *
- * This function changes the size of a previously allocated memory block
- * while preserving its contents and updating the tracking information.
- *
- * @param size Pointer to size array: size[0]=count, size[1]=element size
- * @param ptr_array The allocation tracking array
- * @param ptr The pointer to reallocate
- *
- * @return Pointer to the reallocated memory, or NULL on failure
- */
-void	*realloc_ptr(\
-	size_t *size, t_allocation *ptr_array, void *ptr, t_action action);
-
-/**
- * @brief Adds externally allocated memory to the tracking system
- *
- * This function allows adding memory that was allocated outside the
- * ft_safe_allocate system to be tracked and safely freed later.
- *
- * @param ptr_array The allocation tracking array
- * @param original_ptr The original pointer from malloc/calloc
- * @param user_ptr The user-facing pointer (same as original_ptr if no fencing)
- * @param size Pointer to the size of the allocated memory
- *
- * @return SUCCESS if successfully added, ERROR otherwise
- */
-int		add_to_tracking(\
-	t_allocation *ptr_array, void *original_ptr, void *user_ptr, size_t *size);
-
-/**
- * @brief Gets the number of active allocations in the tracking system
- *
- * This function counts the number of non-NULL pointers in the tracking array
- * to determine how many active allocations are being tracked.
- *
- * @param ptr_array The allocation tracking array
- *
- * @return Number of active allocations
- */
-int		get_allocation_count(t_allocation *ptr_array);
-
-/**
  * @brief Utility functions
  */
 void	*ft_memset(void *b, int c, size_t len);
@@ -322,17 +329,5 @@ void	*ft_calloc(size_t count, size_t size);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_puthex_fd(unsigned long n, int fd);
-
-/**
- * @brief Computes a hash value for a pointer
- *
- * This function generates a hash value for a pointer to be used as an index
- * in the allocation tracking hash table.
- *
- * @param ptr Pointer to hash
- *
- * @return Hash value modulo HASH_TABLE_SIZE as an index into the tracking array
- */
-size_t	hash_ptr(const void *ptr);
 
 #endif /* FT_SAFE_ALLOCATE_H */
