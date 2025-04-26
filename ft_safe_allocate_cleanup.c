@@ -6,13 +6,13 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:10:05 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:20:35 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_safe_allocate.h"
 
-int		add_to_tracking(\
+int	add_to_tracking(
 	t_allocation *ptr_array, void *original_ptr, void *user_ptr, size_t *size)
 {
 	size_t	hash;

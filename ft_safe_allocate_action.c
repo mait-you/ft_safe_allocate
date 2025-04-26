@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:07:49 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:20:15 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,8 @@ int	get_allocation_count(t_allocation *ptr_array)
 
 	count = 0;
 	i = 0;
-	
 	while (i < HASH_TABLE_SIZE)
 	{
-		// printf("==%p==\n", ptr_array[i].user_ptr);
 		if (ptr_array[i].user_ptr != NULL)
 			count++;
 		i++;
