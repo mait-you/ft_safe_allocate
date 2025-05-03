@@ -6,18 +6,43 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:22:52 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/29 17:06:50 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_safe_allocate.h"
+#include "../include/ft_safe_allocate.h"
+
+int	add_to_tracking(
+	t_allocation *ptr_array, void *original_ptr, void *user_ptr, size_t *size)
+{
+	size_t	hash;
+	int		i;
+
+	i = 0;
+	hash = hash_ptr(user_ptr);
+	while (i < HASH_TABLE_SIZE)
+	{
+		if (ptr_array[hash].user_ptr == NULL)
+		{
+			ptr_array[hash].original_ptr = original_ptr;
+			ptr_array[hash].user_ptr = user_ptr;
+			if (size)
+				ptr_array[hash].size = size[0] * size[1];
+			return (SUCCESS);
+		}
+		hash = (hash + 1) % HASH_TABLE_SIZE;
+		i++;
+	}
+	ft_putstr_fd_sa(ERR_ALLOC_TRACK_LIMIT, STDERR_FILENO);
+	return (ERROR);
+}
 
 void	*setup_memfen(void *ptr, size_t total_size)
 {
 	if (!ptr)
 		return (NULL);
-	ft_memset(ptr, GUARD_PATTERN, GUARD_SIZE);
-	ft_memset(
+	ft_memset_sa(ptr, GUARD_PATTERN, GUARD_SIZE);
+	ft_memset_sa(
 		(unsigned char *)ptr + GUARD_SIZE + total_size,
 		GUARD_PATTERN,
 		GUARD_SIZE);
@@ -34,8 +59,8 @@ static int	check_guard(
 	{
 		if (guard[i] != GUARD_PATTERN)
 		{
-			ft_putstr_fd((char *)error_msg, STDERR_FILENO);
-			ft_puthex_fd((unsigned long)user_ptr, STDERR_FILENO);
+			ft_putstr_fd_sa((char *)error_msg, STDERR_FILENO);
+			ft_puthex_fd_sa((unsigned long)user_ptr, STDERR_FILENO);
 			write(STDERR_FILENO, "\n", 1);
 			return (ERROR);
 		}

@@ -1,0 +1,73 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_safe_allocate_cleanup.c                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
+/*   Updated: 2025/05/03 14:20:48 by mait-you         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/ft_safe_allocate.h"
+
+void	*error_cleanup(t_allocation *ptr_array)
+{
+	free_all(ptr_array);
+	ft_putstr_fd_sa(PROMPT, 2);
+	ft_putstr_fd_sa("\e[1;33m", 2);
+	ft_putstr_fd_sa("ALLOCTION", 2);
+	ft_putstr_fd_sa("\e[90m", 2);
+	ft_putstr_fd_sa(": ", 2);
+	ft_putstr_fd_sa("malloc failed", 2);
+	ft_putstr_fd_sa("\e[0m\n", 2);
+	exit(1);
+	return (NULL);
+}
+
+void	*free_one(t_allocation *ptr_array, const void *ptr)
+{
+	int		i;
+	size_t	hash;
+
+	hash = hash_ptr(ptr);
+	i = 0;
+	while (i < HASH_TABLE_SIZE)
+	{
+		if (ptr_array[hash].user_ptr == ptr)
+		{
+			free(ptr_array[hash].user_ptr);
+			ft_memset_sa(&ptr_array[hash], 0, sizeof(t_allocation));
+			return (NULL);
+		}
+		if (ptr_array[hash].user_ptr == NULL)
+			break ;
+		hash = (hash + 1) % HASH_TABLE_SIZE;
+		i++;
+	}
+	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED, STDERR_FILENO);
+	return (NULL);
+}
+
+static void	*free_one_con(t_allocation *ptr_array, void **double_ptr)
+{
+	free_one(ptr_array, double_ptr);
+	return (NULL);
+}
+
+void	*free_list(t_allocation *ptr_array, void **double_ptr, int count)
+{
+	int	i;
+
+	i = -1;
+	if (count == 0)
+	{
+		while (double_ptr && double_ptr[++i])
+			double_ptr[i] = free_one(ptr_array, double_ptr[i]);
+		return (free_one_con(ptr_array, double_ptr));
+	}
+	while (double_ptr && ++i < count)
+			double_ptr[i] = free_one(ptr_array, double_ptr[i]);
+	return (free_one_con(ptr_array, double_ptr));
+}

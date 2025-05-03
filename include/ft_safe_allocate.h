@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 15:23:17 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/30 10:30:15 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@
  * Used when MEMORY_FENCING is enabled
  */
 # define GUARD_SIZE 8
+
+/**
+ * @brief Terminal prompt definition that displays "program ▸" with color formatting
+ *        - "program" appears in red
+ *        - "▸" appears in green
+ *        - Followed by a space in default terminal color
+ */
+#define PROMPT "\e[1;31mprogram \e[1;32m▸ \e[0m"
 
 /**
  * @brief Pattern used for guard bytes
@@ -292,6 +300,14 @@ void	*free_one(t_allocation *ptr_array, const void *ptr);
 void	*free_one_memfen(t_allocation *ptr_array, const void *ptr);
 
 /**
+ * @brief Performs cleanup operations when an error occurs
+ * 
+ * @param ptr_array Array of allocated memory pointers to be freed
+ * @return void* Returns NULL to indicate error condition
+ */
+void	*error_cleanup(t_allocation *ptr_array);
+
+/**
  * 		Memory fencing functions
  */
 
@@ -324,10 +340,10 @@ int		check_memfen(void *user_ptr, size_t user_size);
 /**
  * @brief Utility functions
  */
-void	*ft_memset(void *b, int c, size_t len);
-void	*ft_calloc(size_t count, size_t size);
-void	*ft_memcpy(void *dst, const void *src, size_t n);
-void	ft_putstr_fd(char *s, int fd);
-void	ft_puthex_fd(unsigned long n, int fd);
+void	*ft_memset_sa(void *b, int c, size_t len);
+void	*ft_calloc_sa(size_t count, size_t size);
+void	*ft_memcpy_sa(void *dst, const void *src, size_t n);
+void	ft_putstr_fd_sa(char *s, int fd);
+void	ft_puthex_fd_sa(unsigned long n, int fd);
 
 #endif /* FT_SAFE_ALLOCATE_H */

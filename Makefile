@@ -6,7 +6,7 @@
 #    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/04/26 15:54:58 by mait-you         ###   ########.fr        #
+#    Updated: 2025/05/03 14:21:47 by mait-you         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,9 @@ OBJS_DIR			:= obj
 FENCING_DIR			:= obj/fencing
 
 # Source files
-SRCS				:= ft_safe_allocate.c ft_safe_allocate_action.c \
-    ft_safe_allocate_utils.c ft_safe_allocate_cleanup.c memory_fencing.c
+_SRCS_DIR			:= ft_safe_allocate_simple/
+SRCS				:= $(_SRCS_DIR)ft_safe_allocate.c $(_SRCS_DIR)ft_safe_allocate_action.c \
+    $(_SRCS_DIR)ft_safe_allocate_utils.c $(_SRCS_DIR)ft_safe_allocate_cleanup.c #$(_SRCS_DIR)memory_fencing.c
 
 # Header files
 HEADERS				:= ft_safe_allocate.h

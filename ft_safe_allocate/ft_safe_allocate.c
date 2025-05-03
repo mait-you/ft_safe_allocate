@@ -6,11 +6,11 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/26 13:15:37 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/04/29 09:30:51 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_safe_allocate.h"
+#include "../include/ft_safe_allocate.h"
 
 size_t	hash_ptr(const void *ptr)
 {
