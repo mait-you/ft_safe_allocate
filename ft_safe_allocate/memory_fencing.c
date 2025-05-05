@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/05 09:52:42 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/05 10:09:52 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@ int	add_to_tracking(
 {
 	size_t	hash;
 	int		i;
+	size_t	start_hash;
 
 	i = 0;
 	hash = hash_ptr(user_ptr);
+	start_hash = hash;
 	while (i < HASH_TABLE_SIZE)
 	{
 		if (ptr_array[hash].user_ptr == NULL)
@@ -32,6 +34,8 @@ int	add_to_tracking(
 		}
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
+		if (hash == start_hash)
+			break;
 	}
 	ft_putstr_fd_sa(ERR_ALLOC_TRACK_LIMIT, STDERR_FILENO);
 	return (ERROR);

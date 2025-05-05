@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/04 17:28:53 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/05 10:09:09 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,21 @@ void	*free_one_memfen(t_allocation *ptr_array, const void *ptr)
 	size_t	hash;
 	void	*original_ptr;
 
+	if (!ptr)
+		return (NULL);
 	original_ptr = (void *)((unsigned char *)ptr - GUARD_SIZE);
 	hash = hash_ptr(ptr);
 	i = 0;
 	while (i < HASH_TABLE_SIZE)
 	{
-		if (ptr_array[hash].original_ptr == original_ptr)
+		if (ptr_array[hash].user_ptr == ptr && 
+			ptr_array[hash].original_ptr == original_ptr)
 		{
 			check_memfen(ptr_array[hash].user_ptr, ptr_array[hash].size);
 			free(ptr_array[hash].original_ptr);
 			return (ft_memset_sa(
 				&ptr_array[hash], 0, sizeof(t_allocation)), NULL);
 		}
-		if (ptr_array[hash].original_ptr == NULL)
-			break ;
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
 	}
@@ -60,6 +61,8 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 	int		i;
 	size_t	hash;
 
+	if (!ptr)
+		return (NULL);
 	hash = hash_ptr(ptr);
 	i = 0;
 	while (i < HASH_TABLE_SIZE)
@@ -70,8 +73,6 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 			ft_memset_sa(&ptr_array[hash], 0, sizeof(t_allocation));
 			return (NULL);
 		}
-		if (ptr_array[hash].user_ptr == NULL)
-			break ;
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
 	}
@@ -84,9 +85,9 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 static void	*free_one_con(t_allocation *ptr_array, void **double_ptr)
 {
 	if (MEMORY_FENCING)
-		free_one_memfen(ptr_array, double_ptr);
+		free_one_memfen(ptr_array, *double_ptr);
 	else if (!MEMORY_FENCING)
-		free_one(ptr_array, double_ptr);
+		free_one(ptr_array, *double_ptr);
 	return (NULL);
 }
 
