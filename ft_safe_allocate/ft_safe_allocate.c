@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/29 09:30:51 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/04 17:43:23 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,15 @@
 
 size_t	hash_ptr(const void *ptr)
 {
-	return ((uintptr_t)ptr % HASH_TABLE_SIZE);
+	uintptr_t key;
+	
+	key = (uintptr_t)ptr;
+	key ^= (key >> 33);
+	key *= 0xff51afd7ed558ccd;
+	key ^= (key >> 33);
+	key *= 0xc4ceb9fe1a85ec53;
+	key ^= (key >> 33);
+	return ((size_t)(key % HASH_TABLE_SIZE));
 }
 
 void	*ft_safe_allocate(

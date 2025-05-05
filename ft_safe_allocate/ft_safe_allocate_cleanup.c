@@ -6,18 +6,18 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/29 17:16:36 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/04 17:28:53 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_safe_allocate.h"
 
-void	*error_cleanup(t_allocation *ptr_array)
+void	*error_cleanup_sa(t_allocation *ptr_array)
 {
 	free_all(ptr_array);
 	ft_putstr_fd_sa(PROMPT, 2);
 	ft_putstr_fd_sa("\e[1;33m", 2);
-	ft_putstr_fd_sa("ALLOCTION", 2);
+	ft_putstr_fd_sa("ALLOCATION", 2);
 	ft_putstr_fd_sa("\e[90m", 2);
 	ft_putstr_fd_sa(": ", 2);
 	ft_putstr_fd_sa("malloc failed", 2);
@@ -49,7 +49,9 @@ void	*free_one_memfen(t_allocation *ptr_array, const void *ptr)
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
 	}
-	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED, STDERR_FILENO);
+	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_1, STDERR_FILENO);
+	ft_puthex_fd_sa((uintptr_t)ptr, STDERR_FILENO);
+	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_2, STDERR_FILENO);
 	return (NULL);
 }
 
@@ -73,7 +75,9 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
 	}
-	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED, STDERR_FILENO);
+	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_1, STDERR_FILENO);
+	ft_puthex_fd_sa((uintptr_t)ptr, STDERR_FILENO);
+	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_2, STDERR_FILENO);
 	return (NULL);
 }
 

@@ -6,7 +6,7 @@
 #    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/05/03 14:21:47 by mait-you         ###   ########.fr        #
+#    Updated: 2025/05/03 14:38:05 by mait-you         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ SRCS				:= $(_SRCS_DIR)ft_safe_allocate.c $(_SRCS_DIR)ft_safe_allocate_action.c 
     $(_SRCS_DIR)ft_safe_allocate_utils.c $(_SRCS_DIR)ft_safe_allocate_cleanup.c #$(_SRCS_DIR)memory_fencing.c
 
 # Header files
-HEADERS				:= ft_safe_allocate.h
+HEADERS				:= include/ft_safe_allocate.h
 
 # Object files
 OBJS				:= $(SRCS:%.c=$(OBJS_DIR)/%.o)
@@ -104,17 +104,3 @@ uninstall:
 
 # Install the library to the system
 install_fenced: $(FENCING_LIB)
-	@echo "$(YELLOW)>> Installing $(FENCING_LIB) to /usr/local/lib...$(RESET)"
-	@sudo cp $(FENCING_LIB) /usr/local/lib/
-	@sudo cp $(HEADERS) /usr/local/include/
-	@echo "$(GREEN)>> Installation complete$(RESET)"
-
-# Uninstall the library from the system
-uninstall_fenced:
-	@echo "$(YELLOW)>> Uninstalling $(FENCING_LIB) from /usr/local/lib...$(RESET)"
-	@sudo rm -f /usr/local/lib/$(FENCING_LIB)
-	@sudo rm -f /usr/local/include/$(HEADERS)
-	@echo "$(GREEN)>> Uninstallation complete$(RESET)"
-
-# Phony targets
-.PHONY: all clean fclean re fencing install uninstall install_fenced uninstall_fenced
