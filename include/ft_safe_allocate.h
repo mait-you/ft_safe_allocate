@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/04/30 10:30:15 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/05 09:59:40 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,9 @@ limit\n"
 provided. Only ptr will be freed.\n"
 # define WARN_FREE_NULL_PTR "\033[33mWarning: \033[0mattempt to free a NULL \
 pointer\n"
-# define WARN_PTR_NOT_ALLOCATED "\033[33mWarning: \033[0mpointer was not \
-allocated by ft_safe_allocate so it cannot be freed using it\n"
+# define WARN_PTR_NOT_ALLOCATED_1 "\033[33mWarning: \033[0m [0x "
+# define WARN_PTR_NOT_ALLOCATED_2 "] was not allocated by ft_safe_allocate \
+so it cannot be freed using it\n"
 
 /**
  * @brief Error messages
@@ -222,7 +223,7 @@ void	*free_specific(\
  *
  * @return Number of active allocations
  */
-int		get_allocation_count(t_allocation *ptr_array);
+size_t		get_allocation_count(t_allocation *ptr_array);
 
 /**
  * @brief Reallocates memory while maintaining tracking information
@@ -305,7 +306,7 @@ void	*free_one_memfen(t_allocation *ptr_array, const void *ptr);
  * @param ptr_array Array of allocated memory pointers to be freed
  * @return void* Returns NULL to indicate error condition
  */
-void	*error_cleanup(t_allocation *ptr_array);
+void	*error_cleanup_sa(t_allocation *ptr_array);
 
 /**
  * 		Memory fencing functions

@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/04/19 16:30:00 by mait-you          #+#    #+#              #
-#    Updated: 2025/05/03 14:38:05 by mait-you         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # Library name 
 NAME				:= ft_safe_allocate.a
 FENCING_LIB			:= ft_safe_allocate_fenced.a
@@ -24,9 +12,11 @@ OBJS_DIR			:= obj
 FENCING_DIR			:= obj/fencing
 
 # Source files
-_SRCS_DIR			:= ft_safe_allocate_simple/
-SRCS				:= $(_SRCS_DIR)ft_safe_allocate.c $(_SRCS_DIR)ft_safe_allocate_action.c \
-    $(_SRCS_DIR)ft_safe_allocate_utils.c $(_SRCS_DIR)ft_safe_allocate_cleanup.c #$(_SRCS_DIR)memory_fencing.c
+SRCS				:= ft_safe_allocate/ft_safe_allocate.c \
+						ft_safe_allocate/ft_safe_allocate_action.c \
+						ft_safe_allocate/ft_safe_allocate_utils.c \
+						ft_safe_allocate/ft_safe_allocate_cleanup.c \
+						ft_safe_allocate/memory_fencing.c
 
 # Header files
 HEADERS				:= include/ft_safe_allocate.h
@@ -53,6 +43,7 @@ $(NAME): $(OBJS)
 
 # Compile source files to object files
 $(OBJS_DIR)/%.o: %.c $(HEADERS) | $(OBJS_DIR)
+	@mkdir -p $(dir $@)
 	@echo "$(BLUE)Compiling: $(RESET)$(GRAYL)$<$(RESET)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
@@ -64,6 +55,7 @@ $(FENCING_LIB): $(FENCING_OBJS)
 	@echo "$(GREEN)Library $(YELLOW)$(FENCING_LIB)$(RESET) $(GREEN)created successfully!$(RESET)"
 
 $(FENCING_DIR)/%.o: %.c $(HEADERS) | $(FENCING_DIR)
+	@mkdir $(dir $@)
 	@echo "$(BLUE)Compiling: $(RESET)$(GRAYL)$<$(RESET)"
 	@$(CC) $(CFLAGS) $(FENCING_FLAGS) -c $< -o $@
 
@@ -104,3 +96,17 @@ uninstall:
 
 # Install the library to the system
 install_fenced: $(FENCING_LIB)
+	@echo "$(YELLOW)>> Installing $(FENCING_LIB) to /usr/local/lib...$(RESET)"
+	@sudo cp $(FENCING_LIB) /usr/local/lib/
+	@sudo cp $(HEADERS) /usr/local/include/
+	@echo "$(GREEN)>> Installation complete$(RESET)"
+
+# Uninstall the library from the system
+uninstall_fenced:
+	@echo "$(YELLOW)>> Uninstalling $(FENCING_LIB) from /usr/local/lib...$(RESET)"
+	@sudo rm -f /usr/local/lib/$(FENCING_LIB)
+	@sudo rm -f /usr/local/include/$(HEADERS)
+	@echo "$(GREEN)>> Uninstallation complete$(RESET)"
+
+# Phony targets
+.PHONY: all clean fclean re fencing install uninstall install_fenced uninstall_fenced
