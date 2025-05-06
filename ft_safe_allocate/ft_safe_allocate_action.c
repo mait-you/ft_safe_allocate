@@ -6,29 +6,50 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/05 09:17:36 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/06 14:28:16 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_safe_allocate.h"
 
-void    *realloc_ptr(
-    size_t *size, t_allocation *ptr_array, void *ptr, t_action action)
-{
-    void    *new_ptr;
+// void    *realloc_ptr(
+// 	size_t *size, t_allocation *ptr_array, void *ptr, t_action action)
+// {
+// 	void    *new_ptr;
 
-    new_ptr = allocate_ptr((size_t[2]){size[0] , 1}, ptr_array);
-    if (!new_ptr)
-        return (NULL);
-    if (ptr)
-    {
-        ft_memcpy_sa(new_ptr, ptr, size[1]);
-        if (action == REALLOC)
-            free_specific(ptr_array, ptr, NULL, 0);
-        else if (action == ADD_TO_TRACK)
-            free(ptr);
-    }
-    return (new_ptr);
+// 	new_ptr = allocate_ptr((size_t[2]){size[0] , 1}, ptr_array);
+// 	if (!new_ptr)
+// 		return (NULL);
+// 	if (ptr)
+// 	{
+// 		ft_memcpy_sa(new_ptr, ptr, size[1]);
+// 		if (action == REALLOC)
+// 			free_specific(ptr_array, ptr, NULL, 0);
+// 		else if (action == ADD_TO_TRACK)
+// 			free(ptr);
+// 	}
+// 	return (new_ptr);
+// }
+
+void    *realloc_ptr(
+	size_t *size, t_allocation *ptr_array, void *ptr, t_action action)
+{
+	void    *new_ptr;
+
+	if (!ptr)
+		return (allocate_ptr((size_t[2]){size[0], 1}, ptr_array));
+	if (size[0] == 0)
+		return (free_specific(ptr_array, ptr, NULL, 0), NULL);
+	new_ptr = allocate_ptr((size_t[2]){size[0], 1}, ptr_array);
+	if (!new_ptr)
+		return (NULL);
+	if (ptr && size[1] > 0)
+		ft_memcpy_sa(new_ptr, ptr, size[1]);
+	if (action == REALLOC)
+		free_specific(ptr_array, ptr, NULL, 0);
+	else if (action == ADD_TO_TRACK)
+		free(ptr);
+	return (new_ptr);
 }
 
 size_t	get_allocation_count(t_allocation *ptr_array)
@@ -51,7 +72,7 @@ size_t	get_allocation_count(t_allocation *ptr_array)
 	}
 	if (count > HASH_TABLE_SIZE * 0.9)
 		ft_putstr_fd_sa(WARN_NEAR_ALLOC_LIMIT, STDOUT_FILENO);
-	return (count);
+	return (bytes);
 }
 
 void	*free_specific(

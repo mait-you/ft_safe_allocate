@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:44:47 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/05 09:59:40 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/06 14:22:36 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,7 @@ size_t		get_allocation_count(t_allocation *ptr_array);
  * This function changes the size of a previously allocated memory block
  * while preserving its contents and updating the tracking information.
  *
- * @param size Pointer to size array: size[0]=count, size[1]=element size
+ * @param size Pointer to size array: size[0]=new size, size[1]=n of memecopy size
  * @param ptr_array The allocation tracking array
  * @param ptr The pointer to reallocate
  *
