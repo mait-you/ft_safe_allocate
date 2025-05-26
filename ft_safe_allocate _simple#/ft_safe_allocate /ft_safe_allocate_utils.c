@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 16:25:38 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/14 18:29:12 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:20:01 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,14 @@ void	*ft_memcpy_sa(void *dst, const void *src, size_t n)
 
 void	ft_putstr_fd_sa(char *s, int fd)
 {
+	size_t	len;
+	
 	if (!s || fd == -1)
 		return ;
-	while (*s)
-		write(fd, s++, 1);
+	len = 0;
+	while (s[len])
+		len++;
+	write(fd, s, len);
 }
 
 void	ft_puthex_fd_sa(unsigned long n, int fd)

@@ -5,49 +5,42 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/26 15:52:42 by mait-you         ###   ########.fr       */
+/*   Created: 2025/05/26 16:11:58 by mait-you          #+#    #+#             */
+/*   Updated: 2025/05/26 16:22:32 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_safe_allocate.h"
 
-size_t	hash_ptr(const void *ptr)
+void *error_cleanup(t_allocation_node **head)
 {
-	uintptr_t key;
-	
-	key = (uintptr_t)ptr;
-	key ^= (key >> 33);
-	key *= 0xff51afd7ed558ccd;
-	key ^= (key >> 33);
-	key *= 0xc4ceb9fe1a85ec53;
-	key ^= (key >> 33);
-	return ((size_t)(key % HASH_TABLE_SIZE));
+	free_all(head);
+	ft_putstr_fd_sa(PROMPT, 2);
+	ft_putstr_fd_sa("\e[1;33m", 2);
+	ft_putstr_fd_sa("ALLOCATION", 2);
+	ft_putstr_fd_sa("\e[90m", 2);
+	ft_putstr_fd_sa(": ", 2);
+	ft_putstr_fd_sa("malloc failed", 2);
+	ft_putstr_fd_sa("\e[0m\n", 2);
+	exit(1);
+	return (NULL);
 }
 
-void	*ft_safe_allocate(
-	size_t count,
-	size_t size,
-	t_action action,
-	void *ptr
-	)
+void *ft_safe_allocate(size_t count, size_t size, t_action action, void *ptr)
 {
-	static t_allocation		ptr_array[HASH_TABLE_SIZE];
-	void					*user_ptr;
+	static t_allocation_node	*allocations = NULL;
+	void						*result;
 
-	user_ptr = NULL;
+	result = NULL;
 	if (action == ALLOCATE)
-		user_ptr = allocate_ptr(count, size, ptr_array);
+		result = allocate_ptr(&allocations, count, size);
 	else if (action == FREE_ALL)
-		user_ptr = free_all(ptr_array);
+		result = free_all(&allocations);
 	else if (action == FREE_ONE)
-		user_ptr = free_specific(ptr_array, ptr);
+		result = free_specific(&allocations, ptr);
 	else if (action == GET_USAGE)
-		user_ptr = (void *)(uintptr_t)get_allocation_count(ptr_array);
+		result = (void *)(uintptr_t)get_allocation_count(&allocations);
 	else if (action == ADD_TO_TRACK)
-	{
-		add_to_tracking(ptr_array, ptr, count, size);
-		user_ptr = ptr;
-	}
-	return (user_ptr);
+		result = add_to_tracking(&allocations, ptr, count * size);
+	return (result);
 }

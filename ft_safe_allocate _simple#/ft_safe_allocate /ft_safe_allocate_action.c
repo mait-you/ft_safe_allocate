@@ -1,92 +1,89 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_safe_allocate_action.c                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/26 15:49:31 by mait-you         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/ft_safe_allocate.h"
 
-void	*allocate_ptr(size_t count, size_t size, t_allocation *ptr_array)
+void *allocate_ptr(t_allocation_node **head, size_t count, size_t size)
 {
-	void	*user_ptr;
+	void *ptr;
 
-	user_ptr = ft_calloc_sa(count, size);
-	if (!user_ptr)
-		return (error_cleanup_sa(ptr_array));
-	if (add_to_tracking(ptr_array, user_ptr, count, size) == ERROR)
-		return (free(user_ptr), error_cleanup_sa(ptr_array));
-	return (user_ptr);
+	ptr = ft_calloc_sa(count, size);
+	if (!ptr)
+		return (error_cleanup(head));
+	if (add_to_tracking(head, ptr, count * size) == ERROR)
+	{
+		free(ptr);
+		return (error_cleanup(head));
+	}
+	return (ptr);
 }
 
-void	*free_all(t_allocation *ptr_array)
+void *free_all(t_allocation_node **head)
 {
-	int	i;
+	t_allocation_node	*current;
+	t_allocation_node	*next;
 
-	i = 0;
-	while (i < HASH_TABLE_SIZE)
+	current = *head;
+	while (current)
 	{
-		if (ptr_array[i].user_ptr)
+		next = current->next;
+		free(current->ptr);
+		free(current);
+		current = next;
+	}
+	*head = NULL;
+	return (NULL);
+}
+
+void *free_specific(t_allocation_node **head, const void *ptr)
+{
+	t_allocation_node	*current;
+	t_allocation_node	*prev;
+
+	if (!ptr)
+		return (ft_putstr_fd_sa(WARN_FREE_NULL_PTR, STDERR_FILENO), NULL);
+	current = *head;
+	prev = NULL;
+	while (current)
+	{
+		if (current->ptr == ptr)
 		{
-			free(ptr_array[i].user_ptr);
-			ft_memset_sa(&ptr_array[i], 0, sizeof(t_allocation));
+			if (prev)
+				prev->next = current->next;
+			else
+				*head = current->next;
+			free(current->ptr);
+			free(current);
+			return (NULL);
 		}
-		i++;
+		prev = current;
+		current = current->next;
 	}
 	return (NULL);
 }
 
-size_t	get_allocation_count(t_allocation *ptr_array)
+size_t get_allocation_count(t_allocation_node **head)
 {
-	int		count;
-	size_t	bytes;
-	int		i;
+	t_allocation_node *current;
+	size_t total_bytes;
 
-	count = 0;
-	i = 0;
-	bytes = 0;
-	while (i < HASH_TABLE_SIZE)
+	current = *head;
+	total_bytes = 0;
+	while (current)
 	{
-		if (ptr_array[i].user_ptr != NULL)
-		{
-			count++;
-			bytes += ptr_array[i].size;
-		}
-		i++;
+		total_bytes += current->size;
+		current = current->next;
 	}
-	if (count > HASH_TABLE_SIZE * 0.9)
-		ft_putstr_fd_sa(WARN_NEAR_ALLOC_LIMIT, STDOUT_FILENO);
-	return (bytes);
+	return (total_bytes);
 }
 
-int	add_to_tracking(
-	t_allocation *ptr_array, void *user_ptr, size_t count, size_t size)
+char *add_to_tracking(t_allocation_node **head, void *ptr, size_t size)
 {
-	size_t	hash;
-	int		i;
-	size_t	start_hash;
+	t_allocation_node *new_node;
 
-	i = 0;
-	hash = hash_ptr(user_ptr);
-	start_hash = hash;
-	while (i < HASH_TABLE_SIZE)
-	{
-		if (ptr_array[hash].user_ptr == NULL)
-		{
-			ptr_array[hash].user_ptr = user_ptr;
-				ptr_array[hash].size = count * size;
-			return (SUCCESS);
-		}
-		hash = (hash + 1) % HASH_TABLE_SIZE;
-		i++;
-		if (hash == start_hash)
-			break;
-	}
-	ft_putstr_fd_sa(ERR_ALLOC_TRACK_LIMIT, STDERR_FILENO);
-	return (ERROR);
+	new_node = ft_calloc_sa(1, sizeof(t_allocation_node));
+	if (!new_node)
+		return (error_cleanup(head), NULL);
+	new_node->ptr = ptr;
+	new_node->size = size;
+	new_node->next = *head;
+	*head = new_node;
+	return (ptr);
 }
