@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/14 18:28:27 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:51:04 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,49 +46,22 @@ void	*free_one(t_allocation *ptr_array, const void *ptr)
 		hash = (hash + 1) % HASH_TABLE_SIZE;
 		i++;
 	}
-	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_1, STDERR_FILENO);
-	ft_puthex_fd_sa((uintptr_t)ptr, STDERR_FILENO);
-	ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_2, STDERR_FILENO);
+	// ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_1, STDERR_FILENO);
+	// ft_puthex_fd_sa((uintptr_t)ptr, STDERR_FILENO);
+	// ft_putstr_fd_sa(WARN_PTR_NOT_ALLOCATED_2, STDERR_FILENO);
 	return (NULL);
 }
 
-static void	*free_one_con(t_allocation *ptr_array, void **double_ptr)
-{
-	free_one(ptr_array, *double_ptr);
-	return (NULL);
-}
-
-void	*free_list(t_allocation *ptr_array, void **double_ptr, int count)
-{
-	int	i;
-
-	i = -1;
-	if (count == 0)
-	{
-		while (double_ptr && double_ptr[++i])
-			double_ptr[i] = free_one(ptr_array, double_ptr[i]);
-		return (free_one_con(ptr_array, double_ptr));
-	}
-	while (double_ptr && ++i < count)
-		double_ptr[i] = free_one(ptr_array, double_ptr[i]);
-	return (free_one_con(ptr_array, double_ptr));
-}
 
 void	*free_specific(
-	t_allocation *ptr_array, const void *ptr, void **double_ptr, size_t *size)
+	t_allocation *ptr_array, const void *ptr)
 {
 	int	count;
 
 	count = 0;
-	if (!ptr && !double_ptr)
+	if (!ptr )
 		return (ft_putstr_fd_sa(WARN_FREE_NULL_PTR, STDERR_FILENO), NULL);
-	if (ptr && double_ptr)
-		return (ft_putstr_fd_sa(WARN_BOTH_PTR, STDERR_FILENO), NULL);
 	if (ptr)
 		return (free_one(ptr_array, ptr));
-	if (size)
-		count = *size;
-	if (double_ptr)
-		return (free_list(ptr_array, double_ptr, count));
 	return (NULL);
 }

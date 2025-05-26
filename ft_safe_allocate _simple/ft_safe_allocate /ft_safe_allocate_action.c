@@ -6,20 +6,20 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/15 08:56:20 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:49:31 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/ft_safe_allocate.h"
 
-void	*allocate_ptr(size_t *size, t_allocation *ptr_array)
+void	*allocate_ptr(size_t count, size_t size, t_allocation *ptr_array)
 {
 	void	*user_ptr;
 
-	user_ptr = ft_calloc_sa(size[0], size[1]);
+	user_ptr = ft_calloc_sa(count, size);
 	if (!user_ptr)
 		return (error_cleanup_sa(ptr_array));
-	if (add_to_tracking(ptr_array, user_ptr, size) == ERROR)
+	if (add_to_tracking(ptr_array, user_ptr, count, size) == ERROR)
 		return (free(user_ptr), error_cleanup_sa(ptr_array));
 	return (user_ptr);
 }
@@ -65,7 +65,7 @@ size_t	get_allocation_count(t_allocation *ptr_array)
 }
 
 int	add_to_tracking(
-	t_allocation *ptr_array, void *user_ptr, size_t *size)
+	t_allocation *ptr_array, void *user_ptr, size_t count, size_t size)
 {
 	size_t	hash;
 	int		i;
@@ -79,8 +79,7 @@ int	add_to_tracking(
 		if (ptr_array[hash].user_ptr == NULL)
 		{
 			ptr_array[hash].user_ptr = user_ptr;
-			if (size)
-				ptr_array[hash].size = size[0] * size[1];
+				ptr_array[hash].size = count * size;
 			return (SUCCESS);
 		}
 		hash = (hash + 1) % HASH_TABLE_SIZE;

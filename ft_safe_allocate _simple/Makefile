@@ -16,6 +16,7 @@ SRCS				:= ft_safe_allocate/ft_safe_allocate.c \
 						ft_safe_allocate/ft_safe_allocate_action.c \
 						ft_safe_allocate/ft_safe_allocate_utils.c \
 						ft_safe_allocate/ft_safe_allocate_cleanup.c \
+						ft_safe_allocate/memory_fencing.c
 
 # Header files
 HEADERS				:= include/ft_safe_allocate.h

@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 18:46:19 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/15 08:59:53 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:52:42 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ size_t	hash_ptr(const void *ptr)
 }
 
 void	*ft_safe_allocate(
-	size_t *size,
+	size_t count,
+	size_t size,
 	t_action action,
-	void *ptr,
-	void **double_ptr
+	void *ptr
 	)
 {
 	static t_allocation		ptr_array[HASH_TABLE_SIZE];
@@ -37,16 +37,16 @@ void	*ft_safe_allocate(
 
 	user_ptr = NULL;
 	if (action == ALLOCATE)
-		user_ptr = allocate_ptr(size, ptr_array);
+		user_ptr = allocate_ptr(count, size, ptr_array);
 	else if (action == FREE_ALL)
 		user_ptr = free_all(ptr_array);
 	else if (action == FREE_ONE)
-		user_ptr = free_specific(ptr_array, ptr, double_ptr, size);
+		user_ptr = free_specific(ptr_array, ptr);
 	else if (action == GET_USAGE)
 		user_ptr = (void *)(uintptr_t)get_allocation_count(ptr_array);
 	else if (action == ADD_TO_TRACK)
 	{
-		add_to_tracking(ptr_array, ptr, size);
+		add_to_tracking(ptr_array, ptr, count, size);
 		user_ptr = ptr;
 	}
 	return (user_ptr);
