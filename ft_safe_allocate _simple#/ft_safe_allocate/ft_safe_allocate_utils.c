@@ -6,7 +6,7 @@
 /*   By: mait-you <mait-you@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 16:25:38 by mait-you          #+#    #+#             */
-/*   Updated: 2025/05/26 16:20:01 by mait-you         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:35:54 by mait-you         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	*ft_memset_sa(void *b, int c, size_t len)
 {
 	unsigned char	*ptr;
 
+	if (!b)
+		return (NULL);
 	ptr = (unsigned char *)b;
 	while (len-- > 0)
 		*(ptr++) = (unsigned char)c;
@@ -38,15 +40,20 @@ void	*ft_calloc_sa(size_t count, size_t size)
 void	*ft_memcpy_sa(void *dst, const void *src, size_t n)
 {
 	size_t			i;
-	char			*ptr;
+	char			*d;
+	const char		*s;
 
 	if (!src && !dst)
-		return (0);
+		return (NULL);
+	if (!dst || !src)
+		return (dst);
+	
+	d = (char *)dst;
+	s = (const char *)src;
 	i = 0;
-	ptr = (char *)dst;
 	while (i < n)
 	{
-		*(ptr++) = *((const char *)src++);
+		d[i] = s[i];
 		i++;
 	}
 	return (dst);
@@ -56,7 +63,7 @@ void	ft_putstr_fd_sa(char *s, int fd)
 {
 	size_t	len;
 	
-	if (!s || fd == -1)
+	if (!s || fd < 0)
 		return ;
 	len = 0;
 	while (s[len])
@@ -66,12 +73,12 @@ void	ft_putstr_fd_sa(char *s, int fd)
 
 void	ft_puthex_fd_sa(unsigned long n, int fd)
 {
-	char	*b;
+	char	*base;
 
-	b = "0123456789abcdef";
-	if (fd == -1)
+	base = "0123456789abcdef";
+	if (fd < 0)
 		return ;
 	if (n >= 16)
 		ft_puthex_fd_sa(n / 16, fd);
-	write(fd, &b[n % 16], 1);
+	write(fd, &base[n % 16], 1);
 }
